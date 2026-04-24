@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Daily Sales Prospecting Agent
 Generates sales prospects and outreach emails using Claude
@@ -33,7 +33,7 @@ For each prospect, provide EXACTLY this JSON format:
   "painPoint": "Specific problem this service solves for them",
   "contactApproach": "How to find/contact them"
 }
-Generate exactly 8 prospects as a JSON array. Make them realistic San Antonio businesses. Return ONLY valid JSON array."""
+Generate exactly 8 prospects as a JSON array. Make them realistic San Antonio businesses. Return ONLY the JSON array, no markdown formatting."""
     
     data = {
         "model": "claude-opus-4-6",
@@ -48,8 +48,17 @@ Generate exactly 8 prospects as a JSON array. Make them realistic San Antonio bu
         response.raise_for_status()
         result = response.json()
         
-        # Extract the text content
         content = result['content'][0]['text']
+        
+        # Remove markdown code block formatting if present
+        if content.startswith('```'):
+            # Extract content between backticks
+            parts = content.split('```')
+            content = parts[1] if len(parts) > 1 else content
+            # Remove 'json' label if present
+            if content.startswith('json'):
+                content = content[4:]
+            content = content.strip()
         
         # Parse JSON from response
         prospects = json.loads(content)
@@ -72,7 +81,7 @@ Generate exactly 8 prospects as a JSON array. Make them realistic San Antonio bu
         
     except requests.exceptions.RequestException as e:
         print(f"❌ API Error: {e}")
-        if hasattr(e.response, 'text'):
+        if hasattr(e, 'response') and hasattr(e.response, 'text'):
             print(f"Response: {e.response.text}")
         exit(1)
     except json.JSONDecodeError as e:
