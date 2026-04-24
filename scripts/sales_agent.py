@@ -1,14 +1,19 @@
 ﻿#!/usr/bin/env python3
 """
 Daily Sales Prospecting Agent
-Generates sales prospects and outreach emails using Claude
+Generates sales prospects and sends them via email
 """
 import os
 import json
 from datetime import datetime
 import requests
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
+GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
+RECIPIENT_EMAIL = 'sureteksolutions@gmail.com'
 
 def generate_prospects():
     """Generate sales prospects using Claude API"""
@@ -52,45 +57,103 @@ Generate exactly 8 prospects as a JSON array. Make them realistic San Antonio bu
         
         # Remove markdown code block formatting if present
         if content.startswith('```'):
-            # Extract content between backticks
             parts = content.split('```')
             content = parts[1] if len(parts) > 1 else content
-            # Remove 'json' label if present
             if content.startswith('json'):
                 content = content[4:]
             content = content.strip()
         
         # Parse JSON from response
         prospects = json.loads(content)
+        return prospects
         
-        # Save results
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        results = {
-            "generated_at": timestamp,
-            "prospects": prospects
-        }
-        
-        # Save to JSON file
-        output_file = f"prospects_{datetime.now().strftime('%Y%m%d')}.json"
-        with open(output_file, 'w') as f:
-            json.dump(results, f, indent=2)
-        
-        print(f"✅ Generated {len(prospects)} prospects")
-        print(f"📝 Saved to {output_file}")
-        return True
-        
-    except requests.exceptions.RequestException as e:
-        print(f"❌ API Error: {e}")
-        if hasattr(e, 'response') and hasattr(e.response, 'text'):
-            print(f"Response: {e.response.text}")
-        exit(1)
-    except json.JSONDecodeError as e:
-        print(f"❌ JSON Parse Error: {e}")
-        print(f"Response was: {content}")
-        exit(1)
     except Exception as e:
-        print(f"❌ Unexpected Error: {e}")
+        print(f"❌ Error generating prospects: {e}")
         exit(1)
 
+def send_email(prospects):
+    """Send prospects via email"""
+    try:
+        # Create email
+        msg = MIMEMultipart('html')
+        msg['From'] = RECIPIENT_EMAIL
+        msg['To'] = RECIPIENT_EMAIL
+        msg['Subject'] = f"Daily Sales Prospects - {datetime.now().strftime('%B %d, %Y')}"
+        
+        # Build HTML email body
+        html = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; background-color: #f5f5f5; }}
+                .container {{ max-width: 900px; margin: 0 auto; padding: 20px; }}
+                .header {{ background-color: #2c3e50; color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }}
+                .prospect {{ background-color: white; padding: 20px; margin-bottom: 15px; border-left: 4px solid #3498db; border-radius: 3px; }}
+                .prospect h3 {{ color: #2c3e50; margin-top: 0; }}
+                .prospect-meta {{ color: #7f8c8d; font-size: 13px; margin: 10px 0; }}
+                .prospect-detail {{ margin: 10px 0; }}
+                .prospect-detail strong {{ color: #2c3e50; }}
+                .footer {{ text-align: center; color: #7f8c8d; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ecf0f1; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🎯 Daily Sales Prospects</h1>
+                    <p>Your AI-powered sales intelligence for {datetime.now().strftime('%B %d, %Y')}</p>
+                </div>
+                <p>Hello! Here are your 8 qualified prospects for today:</p>
+        """
+        
+        for i, prospect in enumerate(prospects, 1):
+            html += f"""
+                <div class="prospect">
+                    <h3>#{i} - {prospect['companyName']}</h3>
+                    <div class="prospect-meta">
+                        <strong>Industry:</strong> {prospect['industry']} | 
+                        <strong>Size:</strong> {prospect['estimatedSize']}
+                    </div>
+                    <div class="prospect-detail">
+                        <strong>What they do:</strong> {prospect['description']}
+                    </div>
+                    <div class="prospect-detail">
+                        <strong>Their pain point:</strong> {prospect['painPoint']}
+                    </div>
+                    <div class="prospect-detail">
+                        <strong>How to contact:</strong> {prospect['contactApproach']}
+                    </div>
+                </div>
+            """
+        
+        html += """
+                <div class="footer">
+                    <p>Generated by Suretek Sales Prospecting Agent</p>
+                    <p>Powered by Claude AI</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg.attach(MIMEText(html, 'html'))
+        
+        # Send email via Gmail
+        print(f"📧 Sending email to {RECIPIENT_EMAIL}...")
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(RECIPIENT_EMAIL, GMAIL_APP_PASSWORD)
+            server.send_message(msg)
+        
+        print(f"✅ Email sent successfully!")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error sending email: {e}")
+        return False
+
 if __name__ == "__main__":
-    generate_prospects()
+    print("🤖 Generating sales prospects...")
+    prospects = generate_prospects()
+    print(f"✅ Generated {len(prospects)} prospects")
+    
+    print("📧 Sending email...")
+    send_email(prospects)
