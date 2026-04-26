@@ -1,8 +1,11 @@
 [build]
   publish = "/"
-  command = ""
+    command = ""
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
+    [build.environment]
+      NODE_VERSION = "18"
+
+      [[headers]]
+        for = "/*"
+          [headers.values]
+              X-Frame-Options = "DENY"
