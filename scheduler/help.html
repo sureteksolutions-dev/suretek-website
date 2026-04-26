@@ -38,18 +38,20 @@
     .page { display: flex; max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; gap: 3rem; }
 
     /* SIDEBAR */
-    .sidebar { width: 230px; flex-shrink: 0; }
+    .sidebar { width: 210px; flex-shrink: 0; }
     .sidebar-sticky { position: sticky; top: 80px; }
     .sidebar h3 {
       font-size: 0.68rem; font-weight: 700;
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--cyan); margin-bottom: 0.8rem;
+      white-space: nowrap;
     }
     .sidebar h3::before { content: '// '; }
     .sidebar nav a {
       display: block; font-size: 0.84rem; color: var(--muted);
       text-decoration: none; padding: 0.3rem 0 0.3rem 0.8rem;
       border-left: 2px solid transparent; transition: all 0.2s;
+      white-space: nowrap;
     }
     .sidebar nav a:hover, .sidebar nav a.active { color: var(--cyan); border-left-color: var(--cyan); }
     .sidebar-section { margin-bottom: 2rem; }
