@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suretek Scheduler — Automate Your Business. Stop Doing It Manually.</title>
+  <meta name="description" content="Suretek Scheduler automates your repetitive business tasks — reports, reminders, data syncs, file transfers — running on your schedule, on your network. Built for staffing, accounting, real estate, and more.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #040913;
+      --bg2:     #080f20;
+      --bg3:     #0c1428;
+      --border:  rgba(0,194,255,0.1);
+      --cyan:    #00c2ff;
+      --cyan2:   #009bcc;
+      --text:    #e8e6e3;
+      --muted:   #7a8fa8;
+      --light:   #bcd8f2;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 6%;
+      background: rgba(4,9,19,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-weight: 800; font-size: 1.2rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-logo img { width: 28px; height: 28px; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+      color: var(--light); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--cyan); color: #040913 !important;
+      padding: 0.5rem 1.3rem; border-radius: 8px;
+      font-weight: 700 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #33cfff !important; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      background: var(--cyan); color: #040913;
+      padding: 0.85rem 2rem; border-radius: 8px;
+      font-size: 1rem; font-weight: 700;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block; font-family: 'Sora', sans-serif;
+    }
+    .btn-primary:hover { background: #33cfff; transform: translateY(-2px); }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      padding: 0.85rem 2rem; border-radius: 8px;
+      font-size: 1rem; font-weight: 600;
+      text-decoration: none;
+      border: 1px solid rgba(0,194,255,0.25);
+      transition: border-color 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--cyan); transform: translateY(-2px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 8rem 6% 5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% -5%, rgba(0,194,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(0,194,255,0.08);
+      border: 1px solid rgba(0,194,255,0.25);
+      color: var(--cyan);
+      padding: 0.35rem 1rem; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.4rem);
+      font-weight: 800; line-height: 1.1;
+      max-width: 860px;
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--light); max-width: 580px;
+      margin: 1.5rem auto 2.5rem;
+      font-weight: 400; line-height: 1.7;
+      animation: fadeUp 0.6s ease 0.2s both;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4.5rem;
+      animation: fadeUp 0.6s ease 0.4s both;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2rem; font-weight: 800; color: var(--cyan);
+      display: block;
+    }
+    .stat-label { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* ── SECTION BASE ── */
+    section { padding: 6rem 6%; }
+    .section-tag {
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 1rem;
+    }
+    .section-tag::before { content: '// '; }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; line-height: 1.15;
+      max-width: 620px;
+    }
+    .section-sub {
+      color: var(--light); font-size: 1rem;
+      max-width: 540px; margin-top: 1rem;
+      font-weight: 400; line-height: 1.7;
+    }
+    .centered { text-align: center; }
+    .centered .section-title,
+    .centered .section-sub { margin-left: auto; margin-right: auto; }
+
+    /* ── PAIN SECTION ── */
+    .pain { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .pain-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem;
+    }
+    .pain-card h3 {
+      font-size: 0.95rem; font-weight: 700;
+      margin-bottom: 0.5rem; color: var(--text);
+    }
+    .pain-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── INDUSTRIES ── */
+    .industries-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .industry-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 2rem;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .industry-card:hover {
+      border-color: rgba(0,194,255,0.35);
+      transform: translateY(-4px);
+    }
+    .industry-icon {
+      width: 48px; height: 48px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1.2rem;
+      background: rgba(0,194,255,0.1);
+    }
+    .industry-card h3 {
+      font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+    .industry-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .industry-card ul li {
+      font-size: 0.88rem; color: var(--light);
+      display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .industry-card ul li::before { content: '→'; color: var(--cyan); flex-shrink: 0; }
+
+    /* ── HOW IT WORKS ── */
+    .how { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem; margin-top: 3.5rem;
+    }
+    .step { text-align: center; padding: 0 1rem; }
+    .step-num {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.1rem; color: #040913;
+      margin: 0 auto 1.2rem;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step p { font-size: 0.88rem; color: var(--light); line-height: 1.6; }
+
+    /* ── PRICING ── */
+    .offer-banner {
+      background: rgba(0,194,255,0.07);
+      border: 1px solid rgba(0,194,255,0.2);
+      border-radius: 10px; padding: 1rem 2rem;
+      text-align: center; margin: 2.5rem auto 0;
+      max-width: 700px;
+      font-size: 0.95rem; color: var(--cyan);
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.5rem; margin-top: 2rem;
+      max-width: 1100px; margin-left: auto; margin-right: auto;
+    }
+    .plan {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 2rem;
+      display: flex; flex-direction: column;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+    }
+    .plan:hover { border-color: rgba(0,194,255,0.35); transform: translateY(-4px); }
+    .plan.popular { border-color: var(--cyan); background: linear-gradient(160deg, rgba(0,194,255,0.06), var(--bg2)); }
+    .popular-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--cyan); color: #040913;
+      font-size: 0.72rem; font-weight: 700;
+      padding: 0.25rem 0.9rem; border-radius: 100px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .plan-name {
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.8rem;
+    }
+    .plan-price {
+      font-size: 2.8rem; font-weight: 800; color: var(--cyan); line-height: 1;
+    }
+    .plan-price span { font-size: 1rem; color: var(--muted); font-weight: 400; }
+    .plan-features {
+      list-style: none; margin: 1.5rem 0 2rem;
+      display: flex; flex-direction: column; gap: 0.7rem; flex: 1;
+    }
+    .plan-features li {
+      font-size: 0.88rem; color: var(--light);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .plan-features li::before { content: '✓'; color: var(--cyan); font-weight: 700; }
+    .plan-btn {
+      display: block; text-align: center;
+      padding: 0.8rem; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 700;
+      text-decoration: none; cursor: pointer;
+      transition: all 0.2s; font-family: 'Sora', sans-serif;
+    }
+    .plan-btn-outline {
+      border: 1px solid var(--border); color: var(--text);
+      background: transparent;
+    }
+    .plan-btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+    .plan-btn-solid { background: var(--cyan); color: #040913; border: none; }
+    .plan-btn-solid:hover { background: #33cfff; }
+
+    /* ── LOCAL CTA ── */
+    .local-cta { background: var(--bg2); border-top: 1px solid var(--border); }
+    .local-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+    .local-inner .section-title { margin: 0 auto 1rem; }
+    .local-inner .section-sub { margin: 0 auto 2rem; }
+
+    /* ── CONTACT ── */
+    .contact-wrap {
+      max-width: 560px; margin: 3rem auto 0;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+    .form-group label { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px;
+      padding: 0.75rem 1rem; font-size: 0.9rem;
+      font-family: 'Sora', sans-serif;
+      outline: none; transition: border-color 0.2s; width: 100%;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--cyan); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group select option { background: var(--bg3); }
+    .form-submit {
+      width: 100%; padding: 0.9rem;
+      background: var(--cyan); color: #040913;
+      border: none; border-radius: 8px;
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+      font-family: 'Sora', sans-serif;
+    }
+    .form-submit:hover { background: #33cfff; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 6%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    footer p { font-size: 0.82rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 0.82rem; color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--cyan); }
+
+    /* ── CHIP TAGS ── */
+    .chip {
+      display: inline-block; padding: 0.2rem 0.7rem;
+      border: 1px solid rgba(0,194,255,0.25);
+      border-radius: 4px; font-size: 0.72rem;
+      font-weight: 600; color: var(--cyan);
+      font-family: monospace; margin: 0.2rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: 1.5rem; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">Suretek</a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#industries">Industries</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#contact">Contact</a>
+    <a href="https://scheduler.suretek.online/signup" class="nav-cta">Get Started Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🎉 Limited time — unlimited agents for life on any paid plan</div>
+  <h1>Stop doing it manually.<br><em>Automate your business</em> in minutes.</h1>
+  <p class="hero-sub">
+    Suretek Scheduler runs your repetitive tasks automatically — reports, reminders, data syncs, file transfers — on your schedule, on your own network. No IT department needed.
+  </p>
+  <div class="hero-actions">
+    <a href="https://scheduler.suretek.online/signup" class="btn-primary">Start Free — No Credit Card</a>
+    <a href="#contact" class="btn-outline">Request a Demo</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">2 min</span><div class="stat-label">Setup time</div></div>
+    <div class="stat"><span class="stat-num">$0</span><div class="stat-label">To get started</div></div>
+    <div class="stat"><span class="stat-num">24/7</span><div class="stat-label">Runs automatically</div></div>
+    <div class="stat"><span class="stat-num">100%</span><div class="stat-label">On your network</div></div>
+  </div>
+</section>
+
+<!-- PAIN -->
+<section class="pain">
+  <div class="centered">
+    <div class="section-tag">Sound familiar?</div>
+    <h2 class="section-title">Your team is wasting hours every week on tasks a computer should handle</h2>
+  </div>
+  <div class="pain-grid">
+    <div class="pain-card"><h3>Manually running reports</h3><p>Someone has to log in, export the data, format it, and email it — every single day.</p></div>
+    <div class="pain-card"><h3>Forgetting to follow up</h3><p>Leads, invoices, and renewals fall through the cracks because reminders are manual.</p></div>
+    <div class="pain-card"><h3>Moving files by hand</h3><p>Copying files between folders, uploading to portals, archiving old records — all manual.</p></div>
+    <div class="pain-card"><h3>Systems that don't talk</h3><p>Your CRM, accounting software, and spreadsheets don't sync. Someone has to do it.</p></div>
+    <div class="pain-card"><h3>After-hours work</h3><p>Jobs that need to run overnight or on weekends require someone to babysit them.</p></div>
+    <div class="pain-card"><h3>No visibility</h3><p>You have no idea if last night's backup ran, or if the report actually got sent.</p></div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section id="industries">
+  <div>
+    <div class="section-tag">Built for your industry</div>
+    <h2 class="section-title">What can Suretek automate for your business?</h2>
+    <p class="section-sub">We work with businesses across industries that all share the same problem — too many repetitive tasks, not enough time.</p>
+  </div>
+  <div class="industries-grid">
+    <div class="industry-card">
+      <div class="industry-icon">👥</div>
+      <h3>Staffing Agencies</h3>
+      <ul>
+        <li>Auto-generate weekly timesheet reports</li>
+        <li>Send placement follow-up reminders</li>
+        <li>Sync candidate data between systems</li>
+        <li>Archive expired job orders nightly</li>
+        <li>Email client fill-rate summaries</li>
+      </ul>
+    </div>
+    <div class="industry-card">
+      <div class="industry-icon">📊</div>
+      <h3>Accounting Firms</h3>
+      <ul>
+        <li>Run nightly reconciliation jobs</li>
+        <li>Send automated invoice reminders</li>
+        <li>Back up QuickBooks data automatically</li>
+        <li>Generate client financial summaries</li>
+        <li>Alert on overdue accounts</li>
+      </ul>
+    </div>
+    <div class="industry-card">
+      <div class="industry-icon">🏠</div>
+      <h3>Real Estate</h3>
+      <ul>
+        <li>Auto-send listing update emails</li>
+        <li>Schedule lease renewal reminders</li>
+        <li>Sync MLS data to your database</li>
+        <li>Generate monthly portfolio reports</li>
+        <li>Archive closed deal documents</li>
+      </ul>
+    </div>
+    <div class="industry-card">
+      <div class="industry-icon">🖥</div>
+      <h3>IT &amp; MSPs</h3>
+      <ul>
+        <li>Automate patch and backup jobs</li>
+        <li>Schedule system health checks</li>
+        <li>Run scripts across client networks</li>
+        <li>Send uptime and alert reports</li>
+        <li>Automate log rotation and cleanup</li>
+      </ul>
+    </div>
+    <div class="industry-card">
+      <div class="industry-icon">🏥</div>
+      <h3>Healthcare Admin</h3>
+      <ul>
+        <li>Automate appointment reminders</li>
+        <li>Run end-of-day billing summaries</li>
+        <li>Back up patient records nightly</li>
+        <li>Generate compliance reports</li>
+        <li>Sync scheduling system data</li>
+      </ul>
+    </div>
+    <div class="industry-card">
+      <div class="industry-icon">🏢</div>
+      <h3>Any Small Business</h3>
+      <ul>
+        <li>If you run the same task more than once, we can automate it</li>
+        <li>Works on your existing computers and servers</li>
+        <li>No cloud migration required</li>
+        <li>Set it up in under 2 minutes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="centered">
+    <div class="section-tag">How it works</div>
+    <h2 class="section-title">Your own private automation environment, ready in 2 minutes</h2>
+    <p class="section-sub">Suretek runs a secure agent on your local network so your data never has to leave your building.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Sign up</h3>
+      <p>Create your account and get your own private scheduler environment instantly — no waiting, no setup calls.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Install the agent</h3>
+      <p>Download the lightweight local agent from your dashboard and run it on any Windows or Linux machine inside your network. Takes under 2 minutes.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Create your jobs</h3>
+      <p>Set up tasks through your dashboard — scripts, reports, file moves, reminders. Schedule them by minute, hour, day, or week.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>Relax</h3>
+      <p>Suretek runs your jobs on schedule and logs every result. You'll know immediately if something fails.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="centered">
+  <div class="section-tag">Simple pricing</div>
+  <h2 class="section-title">Start free. Scale as you grow.</h2>
+  <p class="section-sub">No contracts, no hidden fees. Cancel any time.</p>
+  <div class="offer-banner">🎉 <strong>Limited-time offer:</strong> Sign up for any paid plan and get <strong>unlimited agents for life</strong></div>
+  <div class="pricing-grid">
+    <div class="plan">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0<span>/month</span></div>
+      <ul class="plan-features">
+        <li>5 scheduled jobs</li>
+        <li>1 local agent</li>
+        <li>500 executions/month</li>
+        <li>Email support (48hr)</li>
+      </ul>
+      <a href="https://scheduler.suretek.online/signup" class="plan-btn plan-btn-outline">Get Started Free</a>
+    </div>
+    <div class="plan">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">$19<span>/month</span></div>
+      <ul class="plan-features">
+        <li>25 scheduled jobs</li>
+        <li>2 local agents</li>
+        <li>10,000 executions/month</li>
+        <li>Email support (24hr)</li>
+      </ul>
+      <a href="https://scheduler.suretek.online/signup?plan=starter" class="plan-btn plan-btn-solid">Start Free Trial</a>
+    </div>
+    <div class="plan popular">
+      <div class="popular-badge">Most Popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$69<span>/month</span></div>
+      <ul class="plan-features">
+        <li>100 scheduled jobs</li>
+        <li>5 local agents</li>
+        <li>100,000 executions/month</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="https://scheduler.suretek.online/signup?plan=pro" class="plan-btn plan-btn-solid">Start Free Trial</a>
+    </div>
+    <div class="plan">
+      <div class="plan-name">Business</div>
+      <div class="plan-price">$199<span>/month</span></div>
+      <ul class="plan-features">
+        <li>500 scheduled jobs</li>
+        <li>20 local agents</li>
+        <li>Unlimited executions</li>
+        <li>24/7 phone + Slack</li>
+      </ul>
+      <a href="https://scheduler.suretek.online/signup?plan=business" class="plan-btn plan-btn-solid">Start Free Trial</a>
+    </div>
+  </div>
+</section>
+
+<!-- LOCAL CTA -->
+<section class="local-cta">
+  <div class="local-inner">
+    <div class="section-tag">Serving businesses locally</div>
+    <h2 class="section-title">Based locally. Available everywhere.</h2>
+    <p class="section-sub">We work directly with local small businesses in San Antonio and beyond to set up, configure, and support their automation. If you'd rather have someone walk you through it, we're available for hands-on onboarding.</p>
+    <a href="#contact" class="btn-primary">Request a Local Demo</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="centered">
+  <div class="section-tag">Get in touch</div>
+  <h2 class="section-title">Let's talk about your business</h2>
+  <p class="section-sub">Tell us what you're doing manually right now and we'll show you how to automate it.</p>
+  <div class="contact-wrap">
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First name</label>
+          <input type="text" name="first_name" required placeholder="Jane">
+        </div>
+        <div class="form-group">
+          <label>Last name</label>
+          <input type="text" name="last_name" required placeholder="Smith">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Business email</label>
+        <input type="email" name="email" required placeholder="jane@yourbusiness.com">
+      </div>
+      <div class="form-group">
+        <label>Industry</label>
+        <select name="industry">
+          <option value="">Select your industry…</option>
+          <option>Staffing</option>
+          <option>Accounting</option>
+          <option>Real Estate</option>
+          <option>Healthcare</option>
+          <option>IT / MSP</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>What are you currently doing manually?</label>
+        <textarea name="message" placeholder="e.g. We export a report from our CRM every morning and email it to 5 people…"></textarea>
+      </div>
+      <button type="submit" class="form-submit">Send Message →</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Suretek. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="https://scheduler.suretek.online/signup">Sign Up</a>
+    <a href="https://scheduler.suretek.online/help">Help</a>
+    <a href="mailto:support@suretek.online">Support</a>
+  </div>
+</footer>
+
+</body>
+</html>
